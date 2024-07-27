@@ -1,0 +1,30 @@
+todo
+# 1- create a battleship class
+# - ship has a length
+# - ship has a method to count hits
+# - if ship  hit count equals ship length ship should sink
+- ship could have a name ++
+
+2- create a gameboard class
+
+# - create a Tile class
+# - Tile class can have part of a ship
+# - Tile class will have a isHit method that will return true if it was hit by the other player
+# - each game board consists of 10x10 Tiles
+# - each game board has number of ships called fleet
+# - each fleet has  five ships of different lengths
+- each gameboard will let player decied how he would like to lay his ships on the game board ( randomly or lay each ship on game board manualy)
+- each game board Tile can recieve hits from the other player if the other play hit and empty tile is should show a message with Miss! or Ship Was hit if he hit a ship
+- if the tile was already hit it should return false and game manager will let the player hit another tile
+3- create a game class
+- will take two player objects and will create a game with the given inputs
+- will have a isOver method
+- will have a getWinner method
+
+4- create a computerHit class
+- will hit the other player board randomly for now
+
+5- create a gamemanager class
+- game manager will get the type of each player ( computer or real player)
+- game manager will then create a game with the given date of each player
+- game manager will decied which player turn to hit
