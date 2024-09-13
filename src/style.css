@@ -1,13 +1,31 @@
-@import url("https://fonts.googleapis.com/css2?family=Pacifico&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@500&display=swap");
+:root {
+  --svg-light-filter: invert(2%) sepia(30%) saturate(7484%) hue-rotate(224deg)
+    brightness(90%) contrast(101%);
+  --svg-filter: var(--svg-light-filter);
+  --dark950: #083344;
+  --dark800: #155e75;
+  --light200: #a5f3fc;
+  --mid: #0e7490;
+  --hit: #fed7aa;
+  --sunk: #fca5a5;
+  --miss: #cffafe;
+  --canPlace: #6ee7b7;
+  --cantPlace: rgba(252, 165, 165, 0.8);
+}
+
 html {
   height: 100%;
-  font-family: "Pacifico", cursive;
+  /*font-family: "Pacifico", cursive;*/
+  font-family: "Roboto Mono", monospace;
+  font-weight: 500;
 }
 body {
+  color: var(--dark800);
   display: grid;
   height: 100%;
   margin: 0;
-  background-color: #dbeafe;
+  background-color: var(--light200);
 }
 body h1 {
   position: absolute;
@@ -22,7 +40,7 @@ body h1 {
   align-items: center;
 }
 .mainMenuContainer {
-  background-color: #bfdbfe;
+  background-color: var(--dark800);
   display: grid;
   height: 100%;
   width: 50%;
@@ -44,7 +62,7 @@ body h1 {
   display: none;
 }
 .pushable {
-  background-color: #1e3a8a;
+  background-color: var(--dark950);
   border-radius: 12px;
   border: none;
   padding: 0;
@@ -54,10 +72,9 @@ body h1 {
 .front {
   display: block;
   font-size: 1.2rem;
-
-  font-family: "Pacifico", cursive;
+  font-weight: 500;
   padding: 12px 42px;
-  background-color: #3b82f6;
+  background-color: #0e7490;
   color: white;
   transform: translateY(-4px);
   will-change: transform;
@@ -77,7 +94,7 @@ body h1 {
 }
 .rightLabel,
 .leftLabel {
-  background-color: #1e3a8a;
+  background-color: var(--dark950);
   border: none;
   padding: 0;
   cursor: pointer;
@@ -98,11 +115,27 @@ input:checked + .leftLabel .front {
   transform: translateY(-2px);
 }
 .boardsArea {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 10vw;
-  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
+}
+.editBoard {
+  grid-column: 1 / span 2;
+  position: relative;
+  align-self: center;
+  justify-self: center;
+  padding: 1rem;
+  display: flex;
+  gap: 2rem;
+  border-radius: 16px;
+  background-color: var(--mid);
+  color: var(--light200);
+}
+.editBoard .editBoardArea {
+  background-color: var(--light200);
+  z-index: 1;
 }
 @media only screen and (max-width: 900px) {
   body h1 {
@@ -110,17 +143,25 @@ input:checked + .leftLabel .front {
   }
 }
 .gameBoard {
-  border: 2px solid #3b82f6;
+  border: 2px solid var(--dark800);
   height: clamp(400px, 25vw, 25vw);
   width: clamp(400px, 25vw, 25vw);
   display: flex;
   flex-wrap: wrap;
 }
+.P1 {
+  grid-column: 1 / span 1;
+  grid-row: 1;
+}
+.P2 {
+  grid-column: 2 / span 1;
+  grid-row: 1;
+}
 .tile {
   height: 10%;
   width: 10%;
   box-sizing: border-box;
-  border: 2px solid #3b82f6;
+  border: 2px solid var(--dark800);
 }
 .cell {
   position: relative;
@@ -128,34 +169,53 @@ input:checked + .leftLabel .front {
   width: 100%;
 }
 .hit {
-  background-color: #f9e2af;
+  background-color: var(--hit);
   content: "✖";
 }
 .sunk {
-  background-color: #f38ba8;
-}
-.sunk::before {
-  content: "✖";
-  color: #94a3b8;
+  background-color: var(--sunk);
+  display: flex;
+  align-content: center;
+  color: #0f172a;
 }
 .miss {
-  background-color: #94a3b8;
+  background-color: var(--miss);
+}
+.switchBtn {
+  position: absolute;
+  align-self: center;
+  justify-self: center;
 }
 .ship {
   position: absolute;
   top: 0;
   left: 0;
-  opacity: 50%;
-  background-color: #93c5fd;
   margin: 0;
   padding: 0;
-  z-index: 9;
+  z-index: 5;
+  transform-origin: center;
 }
+.shipImg {
+  transform-origin: center;
+  position: relative;
+}
+.edit .shipImg:hover {
+  opacity: 50%;
+}
+.movingShip .ship {
+  z-index: -1;
+}
+.canPlace,
+.cantPlace {
+  z-index: 9;
+  opacity: 100% !important;
+}
+
 .canPlace {
-  background-color: green;
+  background-color: var(--canPlace) !important;
 }
 .cantPlace {
-  background-color: red;
+  background-color: var(--cantPlace) !important;
 }
 .btnsDiv,
 .msgArea {
@@ -168,4 +228,29 @@ input:checked + .leftLabel .front {
 .msgArea h2 {
   grid-column: 1 / span 2;
   text-align: center;
+}
+.gameOverDia[open=""] {
+  color: var(--dark950);
+  z-index: 11;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  align-items: center;
+  justify-content: space-between;
+  border: 0;
+  border-radius: 16px;
+  background-color: rgba(165, 243, 252, 0.8);
+}
+.closeDiaBtn {
+  border: 0;
+  background: transparent;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+}
+.closeBtnImg {
+  height: 30px;
+  width: auto;
+  filter: var(--svg-filter);
 }

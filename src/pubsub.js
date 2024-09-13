@@ -1,23 +1,3 @@
-// class Observable {
-//   constructor() {
-//     this.observers = {};
-//   }
-//   subscribe(fn, evName) {
-//     this.observers[evName] = this.observers[evName] || [];
-//     this.observers[evName].push(fn);
-//   }
-//   unsubscribe(fn, evName) {
-//     this.observers[evName] = this.observers[evName].filter(
-//       (observer) => observer !== fn,
-//     );
-//   }
-//   notify(data, evName) {
-//     this.observers[evName].forEach((observer) => observer(data));
-//   }
-// }
-// let observable = new Observable();
-// export default observable;
-
 const pubsub = {
   events: {},
   subscribe: function (evName, fn) {

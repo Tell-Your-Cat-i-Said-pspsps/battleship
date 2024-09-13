@@ -1,5 +1,5 @@
-import Game from "./game.js";
-import pubsub from "./pubsub.js";
+import Game from "../gameElements/game.js";
+import pubsub from "../pubsub.js";
 
 const mainMenu = {
   render: () => {
@@ -12,7 +12,6 @@ const mainMenu = {
     const opInputDiv = document.createElement("div");
     const opDivHeader = document.createElement("h2");
     opDivHeader.textContent = "VS.";
-
     const inputComp = document.createElement("input");
     inputComp.type = "radio";
     inputComp.id = "typeComputer";

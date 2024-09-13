@@ -1,11 +1,11 @@
-import pubsub from "./pubsub.js";
+import pubsub from "../pubsub.js";
 const editPage = {
   randomize: (gameBoard) => {
     gameBoard.placeAllShipsRandomly();
     const gameBoardDiv = gameBoard.render("edit");
-    const boardsArea = document.querySelector(".boardsArea");
-    boardsArea.innerHTML = "";
-    boardsArea.appendChild(gameBoardDiv);
+    const editBoardArea = document.querySelector(".editBoardArea");
+    editBoardArea.innerHTML = "";
+    editBoardArea.appendChild(gameBoardDiv);
   },
   renderCurrentPlayerEditBoard: async (game) => {
     const player = game.getCurrentPlayer();
@@ -14,7 +14,16 @@ const editPage = {
       container.innerHTML = "";
       const boardsArea = document.createElement("div");
       boardsArea.className = "boardsArea";
+      const editBoard = document.createElement("div");
+      editBoard.className = "editBoard";
+      const editBoardArea = document.createElement("div");
+      editBoardArea.className = "editBoardArea";
       let currentPlayerBoard = player.gameBoard.render("edit");
+      const tips = document.createElement("div");
+      tips.textContent = "To rotate a selected ship press the Spacebar";
+      tips.style.width = "6rem";
+      tips.style.alignSelf = "center";
+      tips.style.fontSize = "1rem";
       const btnsDiv = document.createElement("div");
       btnsDiv.className = "btnsDiv";
       const currentPlayer = document.createElement("h2");
@@ -39,6 +48,9 @@ const editPage = {
         if (game.canStartGame()) {
           game.nextPlayer();
           pubsub.publish("loadGamePage", game);
+          if (game.getCurrentPlayer().getPlayerType() === "C") {
+            pubsub.publish("playComputerTurn");
+          }
         } else {
           if (player.isReady()) {
             game.nextPlayer();
@@ -49,8 +61,10 @@ const editPage = {
       btnsDiv.appendChild(currentPlayer);
       btnsDiv.appendChild(randomBtn);
       btnsDiv.appendChild(confirmBtn);
-      boardsArea.appendChild(currentPlayerBoard);
-
+      editBoardArea.appendChild(currentPlayerBoard);
+      editBoard.appendChild(editBoardArea);
+      editBoard.appendChild(tips);
+      boardsArea.appendChild(editBoard);
       container.appendChild(boardsArea);
       container.appendChild(btnsDiv);
     } else {
@@ -58,6 +72,9 @@ const editPage = {
       if (game.canStartGame()) {
         game.nextPlayer();
         pubsub.publish("loadGamePage", game);
+        if (game.getCurrentPlayer().getPlayerType() === "C") {
+          pubsub.publish("playComputerTurn");
+        }
       } else {
         if (player.isReady()) {
           game.nextPlayer();

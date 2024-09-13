@@ -1,3 +1,8 @@
+import carrierSVG from "../assets/shipsImg/carrier.svg";
+import patrolSVG from "../assets/shipsImg/patrol.svg";
+import destroyerSVG from "../assets/shipsImg/destroyer.svg";
+import battleshipSVG from "../assets/shipsImg/battleship.svg";
+import submarineSVG from "../assets/shipsImg/submarine.svg";
 const orientation = Object.freeze({
   VERTICAL: "VERTICAL",
   HORIZONTAL: "HORIZONTAL",
@@ -20,13 +25,17 @@ export default class Battleship {
     const shipDiv = document.createElement("div");
     shipDiv.setAttribute("ship", this.getShipType());
     shipDiv.classList.add("ship");
-    if (this.#orientation === "HORIZONTAL") {
-      shipDiv.style.height = "100%";
-      shipDiv.style.width = `calc(${this.getShipLength() * 100}% + ${4 * this.getShipLength() - 4}px`;
-    } else {
-      shipDiv.style.width = "100%";
-      shipDiv.style.height = `calc(${this.getShipLength() * 100}% + ${4 * this.getShipLength() - 4}px`;
+    const shipImg = document.createElement("img");
+    shipImg.className = "shipImg";
+    shipImg.src = this.getShipImg();
+    shipDiv.style.height = "100%";
+    shipDiv.style.width = "100%";
+    shipImg.style.height = "100%";
+    shipImg.style.width = `calc(${this.getShipLength() * 100}% + ${4 * this.getShipLength() - 4}px`;
+    if (this.#orientation !== "HORIZONTAL") {
+      shipDiv.style.transform = `rotate(90deg)`;
     }
+    shipDiv.appendChild(shipImg);
     return shipDiv;
   }
   isSunk() {
@@ -77,6 +86,20 @@ export default class Battleship {
   getShipOrientation() {
     return this.#orientation;
   }
+  getShipImg = () => {
+    switch (this.#type) {
+      case "DESTROYER":
+        return destroyerSVG;
+      case "CARRIER":
+        return carrierSVG;
+      case "SUBMARINE":
+        return submarineSVG;
+      case "BATTLESHIP":
+        return battleshipSVG;
+      case "PATROL":
+        return patrolSVG;
+    }
+  };
   getShipType() {
     return this.#type;
   }

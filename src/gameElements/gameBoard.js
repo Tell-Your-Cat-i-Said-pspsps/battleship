@@ -1,5 +1,5 @@
 import Battleship from "./battleship.js";
-import pubsub from "./pubsub.js";
+import pubsub from "../pubsub.js";
 class Tile {
   #isHit = false;
   constructor() {
@@ -46,6 +46,7 @@ export default class GameBoard {
   render = (state) => {
     const length = this.#board.length;
     const boardContainer = document.createElement("div");
+    boardContainer.classList.add(state);
     const getShipTiles = (ship) => {
       const startTile = ship.startTile;
       const orientation = ship.getShipOrientation();
@@ -62,7 +63,7 @@ export default class GameBoard {
       }
       return tiles;
     };
-    boardContainer.className = "gameBoard";
+    boardContainer.classList.add("gameBoard");
     for (let rows = 0; rows < length; rows++) {
       for (let cols = 0; cols < length; cols++) {
         const tileDiv = document.createElement("div");
@@ -89,9 +90,9 @@ export default class GameBoard {
             const result = this.hitTile([rows, cols]);
             if (result === "Miss") {
               cell.classList.add("miss");
-              this.pubsub.publish("currentTurnResult", result);
             } else if (result === "Hit") {
               if (this.#board[rows][cols].battleship.isSunk()) {
+                this.renderFleet(boardContainer, state);
                 const shipTiles = getShipTiles(
                   this.#board[rows][cols].battleship,
                 );
@@ -104,6 +105,8 @@ export default class GameBoard {
                 cell.classList.add("hit");
               }
             }
+
+            this.pubsub.publish("currentTurnResult", result);
           };
           tileDiv.addEventListener("click", hitTileDiv);
         }
@@ -111,6 +114,7 @@ export default class GameBoard {
         boardContainer.appendChild(tileDiv);
       }
     }
+
     this.renderFleet(boardContainer, state);
     return boardContainer;
   };
@@ -127,6 +131,8 @@ export default class GameBoard {
       shipDiv.setAttribute("startTileRow", `${startTile[0]}`);
       shipDiv.setAttribute("startTileCol", `${startTile[1]}`);
       shipDiv.setAttribute("currentOrientation", `${currentOrientation}`);
+
+      const shipImg = shipDiv.querySelector(".shipImg");
       if (state === "edit") {
         const changeOrientation = (event) => {
           event.stopPropagation();
@@ -134,26 +140,27 @@ export default class GameBoard {
           if (key === " ") {
             if (currentOrientation === "HORIZONTAL") {
               currentOrientation = "VERTICAL";
-              shipDiv.style.width = "100%";
-              shipDiv.style.height = `calc(${ship.getShipLength() * 100}% + ${4 * ship.getShipLength() - 4}px`;
+              shipDiv.style.transform = "rotate(90deg)";
             } else {
               currentOrientation = "HORIZONTAL";
-              shipDiv.style.height = "100%";
-              shipDiv.style.width = `calc(${ship.getShipLength() * 100}% + ${4 * ship.getShipLength() - 4}px`;
+              shipDiv.style.transform = "rotate(0deg)";
             }
             checkShipPlacement(event);
           }
         };
         const onClickShip = (event) => {
-          event.stopPropagation();
-          this.removeShip(ship);
-          checkShipPlacement(event);
-          boardContainer.addEventListener("mousemove", moveShipDiv);
-          boardContainer.addEventListener("click", attemptShipPlacement);
-          shipDiv.removeEventListener("click", onClickShip);
-          window.addEventListener("keydown", changeOrientation);
+          if (this.allShipsPlaced()) {
+            event.stopPropagation();
+            boardContainer.classList.add("movingShip");
+            this.removeShip(ship);
+            checkShipPlacement(event);
+            boardContainer.addEventListener("mousemove", moveShipDiv);
+            boardContainer.addEventListener("click", attemptShipPlacement);
+            shipImg.removeEventListener("click", onClickShip);
+            window.addEventListener("keydown", changeOrientation);
+          }
         };
-        shipDiv.addEventListener("click", onClickShip);
+        shipImg.addEventListener("click", onClickShip);
         const checkShipPlacement = (event) => {
           let currentStartRow = parseInt(shipDiv.getAttribute("startTileRow"));
           let currentStartCol = parseInt(shipDiv.getAttribute("startTileCol"));
@@ -173,11 +180,11 @@ export default class GameBoard {
               currentOrientation,
             )
           ) {
-            shipDiv.classList.remove("cantPlace");
-            shipDiv.classList.add("canPlace");
+            shipImg.classList.remove("cantPlace");
+            shipImg.classList.add("canPlace");
           } else {
-            shipDiv.classList.remove("canPlace");
-            shipDiv.classList.add("cantPlace");
+            shipImg.classList.remove("canPlace");
+            shipImg.classList.add("cantPlace");
           }
         };
         const moveShipDiv = (event) => {
@@ -212,11 +219,11 @@ export default class GameBoard {
                 currentOrientation,
               )
             ) {
-              shipDiv.classList.remove("cantPlace");
-              shipDiv.classList.add("canPlace");
+              shipImg.classList.remove("cantPlace");
+              shipImg.classList.add("canPlace");
             } else {
-              shipDiv.classList.remove("canPlace");
-              shipDiv.classList.add("cantPlace");
+              shipImg.classList.remove("canPlace");
+              shipImg.classList.add("cantPlace");
             }
             cell.appendChild(shipDiv);
           }
@@ -241,9 +248,10 @@ export default class GameBoard {
           boardContainer.removeEventListener("mousemove", moveShipDiv);
           boardContainer.removeEventListener("click", attemptShipPlacement);
           window.removeEventListener("keydown", changeOrientation);
-          shipDiv.classList.remove("canPlace");
-          shipDiv.classList.remove("cantPlace");
-          shipDiv.addEventListener("click", onClickShip);
+          shipImg.classList.remove("canPlace");
+          shipImg.classList.remove("cantPlace");
+          boardContainer.classList.remove("movingShip");
+          shipImg.addEventListener("click", onClickShip);
           if (placed) {
             if (ship.getShipOrientation() !== currentOrientation) {
               ship.changeShipOrientation();
@@ -253,11 +261,9 @@ export default class GameBoard {
             this.placeShip(ship, ship.startTile, ship.getShipOrientation());
             currentOrientation = ship.getShipOrientation();
             if (ship.getShipOrientation() === "VERTICAL") {
-              shipDiv.style.width = "100%";
-              shipDiv.style.height = `calc(${ship.getShipLength() * 100}% + ${4 * ship.getShipLength() - 4}px`;
+              shipDiv.style.transform = "rotate(90deg)";
             } else {
-              shipDiv.style.height = "100%";
-              shipDiv.style.width = `calc(${ship.getShipLength() * 100}% + ${4 * ship.getShipLength() - 4}px`;
+              shipDiv.style.transform = "rotate(0deg)";
             }
             const tile = boardContainer.querySelector(
               `[tilerow='${startTile[0]}'][tilecol="${startTile[1]}"]`,
@@ -269,7 +275,12 @@ export default class GameBoard {
           }
         };
         cell.appendChild(shipDiv);
-      } else if (state === "current" || state === "oppShowShips") {
+      } else if (
+        state === "current" ||
+        state === "oppShowShips" ||
+        state === "gameOver" ||
+        ship.isSunk()
+      ) {
         cell.appendChild(shipDiv);
       }
     });
@@ -492,4 +503,24 @@ export default class GameBoard {
       }
     }
   }
+
+  getShipTiles = (ship) => {
+    const startTile = ship.startTile;
+    const orientation = ship.getShipOrientation();
+    const length = ship.getShipLength();
+    let tiles = [];
+    if (orientation === "HORIZONTAL") {
+      for (let i = 0; i < length; i++) {
+        tiles.push([startTile[0], startTile[1] + i]);
+      }
+    } else {
+      for (let i = 0; i < length; i++) {
+        tiles.push([startTile[0] + i, startTile[1]]);
+      }
+    }
+    return tiles;
+  };
+  getBoardLength = () => {
+    return this.#board.length;
+  };
 }
