@@ -38,17 +38,19 @@ body h1 {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  margin-top: 50px;
 }
+
 .mainMenuContainer {
   background-color: var(--dark800);
   display: grid;
-  height: 100%;
-  width: 50%;
-  height: 50%;
+  height: clamp(500px, 50%, 600px);
+  width: clamp(500px, 50%, 600px);
   border-radius: 16px;
   align-items: center;
   justify-items: center;
   gap: 16px;
+  margin-top: 50px;
 }
 .opponentTypeArea,
 .opponentTypeArea div {
@@ -137,9 +139,33 @@ input:checked + .leftLabel .front {
   background-color: var(--light200);
   z-index: 1;
 }
+@media only screen and (max-width: 600px) {
+  .editBoard {
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 0 8px;
+  }
+  .editBoard .editBoardArea + div {
+    width: auto !important;
+  }
+}
 @media only screen and (max-width: 900px) {
+  body {
+    grid-template-rows: auto 1fr;
+  }
+  .container {
+    margin-top: 0;
+  }
+  .mainMenuContainer {
+    width: 80%;
+    min-width: 450px;
+  }
   body h1 {
     position: relative;
+  }
+  .boardsArea {
+    display: flex;
+    flex-wrap: wrap;
   }
 }
 .gameBoard {
@@ -194,6 +220,9 @@ input:checked + .leftLabel .front {
   padding: 0;
   z-index: 5;
   transform-origin: center;
+}
+.editBoard .editBoardArea + div {
+  width: 6rem;
 }
 .shipImg {
   transform-origin: center;
