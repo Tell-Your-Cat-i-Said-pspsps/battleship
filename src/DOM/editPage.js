@@ -21,7 +21,6 @@ const editPage = {
       let currentPlayerBoard = player.gameBoard.render("edit");
       const tips = document.createElement("div");
       tips.textContent = "To rotate a selected ship press the Spacebar";
-      tips.style.width = "6rem";
       tips.style.alignSelf = "center";
       tips.style.fontSize = "1rem";
       const btnsDiv = document.createElement("div");
